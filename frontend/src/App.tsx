@@ -4,6 +4,8 @@ import Dashboard from "@/pages/Dashboard";
 import AppLayout from "@/components/layout/AppLayout";
 import BalitaList from "@/pages/balita/BalitaList";
 import BalitaDetail from "@/pages/balita/BalitaDetail";
+import IbuHamilList from "@/pages/ibu-hamil/IbuHamilList";
+import IbuHamilDetail from "@/pages/ibu-hamil/IbuHamilDetail";
 
 function App() {
   return (
@@ -15,6 +17,8 @@ function App() {
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/balita" element={<BalitaList />} />
         <Route path="/balita/:id" element={<BalitaDetail />} />
+        <Route path="/ibu-hamil" element={<IbuHamilList />} />
+        <Route path="/ibu-hamil/:id" element={<IbuHamilDetail />} />
       </Route>
     </Routes>
   );
