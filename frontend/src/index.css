@@ -1,0 +1,86 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 120 20% 97%;
+    --foreground: 151 20% 15%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 151 20% 15%;
+ 
+    --popover: 0 0% 100%;
+    --popover-foreground: 151 20% 15%;
+ 
+    --primary: 151 82% 29%;
+    --primary-foreground: 0 0% 100%;
+ 
+    --secondary: 174 62% 47%;
+    --secondary-foreground: 0 0% 100%;
+ 
+    --muted: 151 10% 92%;
+    --muted-foreground: 151 10% 45%;
+ 
+    --accent: 174 62% 47%;
+    --accent-foreground: 0 0% 100%;
+ 
+    --destructive: 1 83% 62%;
+    --destructive-foreground: 0 0% 100%;
+    
+    --warning: 35 89% 58%;
+    --warning-foreground: 0 0% 100%;
+
+    --border: 151 15% 90%;
+    --input: 151 15% 90%;
+    --ring: 151 82% 29%;
+ 
+    --radius: 0.5rem;
+  }
+ 
+  .dark {
+    --background: 151 20% 10%;
+    --foreground: 0 0% 95%;
+ 
+    --card: 151 20% 15%;
+    --card-foreground: 0 0% 95%;
+ 
+    --popover: 151 20% 15%;
+    --popover-foreground: 0 0% 95%;
+ 
+    --primary: 151 82% 29%;
+    --primary-foreground: 0 0% 100%;
+ 
+    --secondary: 174 62% 47%;
+    --secondary-foreground: 0 0% 100%;
+ 
+    --muted: 151 20% 20%;
+    --muted-foreground: 151 10% 65%;
+ 
+    --accent: 174 62% 47%;
+    --accent-foreground: 0 0% 100%;
+ 
+    --destructive: 1 83% 62%;
+    --destructive-foreground: 0 0% 100%;
+    
+    --warning: 35 89% 58%;
+    --warning-foreground: 0 0% 100%;
+ 
+    --border: 151 20% 25%;
+    --input: 151 20% 25%;
+    --ring: 151 82% 29%;
+  }
+}
+ 
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground font-sans;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+  }
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Fraunces', serif;
+  }
+}
