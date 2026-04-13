@@ -114,15 +114,15 @@ export default function BalitaList() {
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">Data Balita</h1>
-          <p className="text-muted-foreground text-sm">Kelola daftar balita terdaftar di Posyandu Anda.</p>
+          <h1 className="text-3xl font-bold tracking-tight">Data Balita & Anak Kecil</h1>
+          <p className="text-muted-foreground text-sm">Kelola daftar balita dan anak pra-sekolah terdaftar di Posyandu Anda.</p>
         </div>
 
         <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
           <DialogTrigger asChild>
             <Button className="w-full sm:w-auto shadow-sm">
               <Plus className="w-4 h-4 mr-2" />
-              Tambah Balita
+              Tambah Anak
             </Button>
           </DialogTrigger>
           <DialogContent className="sm:max-w-[500px] h-[90vh] sm:h-auto overflow-y-auto">
@@ -243,7 +243,7 @@ export default function BalitaList() {
           <div className="relative w-full sm:max-w-sm">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
             <Input 
-              placeholder="Cari nama balita..." 
+              placeholder="Cari nama balita / anak..." 
               className="pl-9 w-full bg-background/50 border-border/60"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
@@ -273,7 +273,7 @@ export default function BalitaList() {
             <TableHeader className="bg-muted/50">
               <TableRow>
                 <TableHead className="w-[80px]">No</TableHead>
-                <TableHead>Identitas Balita</TableHead>
+                <TableHead>Identitas Anak</TableHead>
                 <TableHead className="hidden sm:table-cell">Orang Tua</TableHead>
                 <TableHead>Status Terakhir</TableHead>
                 <TableHead className="text-right">Aksi</TableHead>
