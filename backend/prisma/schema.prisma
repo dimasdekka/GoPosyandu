@@ -68,17 +68,19 @@ model Balita {
 }
 
 model PemeriksaanBalita {
-  id          Int      @id @default(autoincrement())
-  balitaId    Int
-  balita      Balita   @relation(fields: [balitaId], references: [id], onDelete: Cascade)
+  id              Int      @id @default(autoincrement())
+  balitaId        Int
+  balita          Balita   @relation(fields: [balitaId], references: [id], onDelete: Cascade)
   
-  tglUkur     DateTime @default(now())
-  bb          Float    // dalam kg
-  tb          Float?   // dalam cm
-  statusGizi  String   // "Gizi Baik", "Kurang", "Buruk"
+  tglUkur         DateTime @default(now())
+  bb              Float    // dalam kg
+  tb              Float?   // dalam cm
+  lingkarKepala   Float?   // dalam cm - deteksi stunting
+  statusGizi      String   // "Baik", "Kurang", "Buruk", "Lebih"
+  catatanTindakan String?  @db.Text // Vitamin A, Obat Cacing, Imunisasi, dll
   
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
 }
 
 // ------------------------------------
@@ -111,6 +113,10 @@ model PemeriksaanIbuHamil {
   tensiSistolik  Int?
   tensiDiastolik Int?
   bb             Float?
+  lila           Float?   // Lingkar Lengan Atas - deteksi KEK
+  tfu            Int?     // Tinggi Fundus Uteri (cm)
+  djj            Int?     // Denyut Jantung Janin per menit
+  keluhan        String?  @db.Text
   statusRisiko   String   // "Normal", "Risiko Rendah", "Risiko Tinggi"
   
   createdAt      DateTime @default(now())
@@ -125,6 +131,7 @@ model Remaja {
   id          Int      @id @default(autoincrement())
   nama        String
   umur        Int
+  jk          String   @default("L") // "L" / "P"
   sekolah     String
   alamat      String
   
@@ -142,9 +149,12 @@ model PemeriksaanRemaja {
   
   tglPeriksa     DateTime @default(now())
   bb             Float?
+  tb             Float?   // Tinggi Badan untuk IMT
   tensiSistolik  Int?
   tensiDiastolik Int?
-  statusGizi     String   // "Normal", "Kurang", dll.
+  lingkarPerut   Float?   // cm
+  kadarHb        Float?   // Hemoglobin g/dL - deteksi anemia
+  statusGizi     String   // "Normal", "Kurang", "Lebih", "Anemia"
   catatanEdukasi String?  @db.Text
   
   createdAt      DateTime @default(now())
@@ -159,6 +169,7 @@ model Lansia {
   id          Int      @id @default(autoincrement())
   nama        String
   umur        Int
+  jk          String   @default("L") // "L" / "P"
   alamat      String
   
   // Relations
@@ -174,10 +185,15 @@ model PemeriksaanLansia {
   lansia         Lansia   @relation(fields: [lansiaId], references: [id], onDelete: Cascade)
   
   tglPeriksa     DateTime @default(now())
+  bb             Float?   // kg
+  tb             Float?   // cm - untuk IMT
   tensiSistolik  Int?
   tensiDiastolik Int?
   gulaDarah      Int?     // mg/dL
-  resikoPTM      String   // "Rendah", "Tinggi"
+  asamUrat       Float?   // mg/dL
+  kolesterol     Int?     // mg/dL
+  keluhan        String?  @db.Text
+  resikoPTM      String   // "Rendah", "Sedang", "Tinggi"
   
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt

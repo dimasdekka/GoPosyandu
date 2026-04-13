@@ -28,6 +28,11 @@ export class BalitaService {
     return this.repository.create(data);
   }
 
+  async updateBalita(id: number, data: Prisma.BalitaUpdateInput) {
+    await this.getBalitaDetail(id);
+    return this.repository.update(id, data);
+  }
+
   async recordPemeriksaan(balitaId: number, data: Omit<Prisma.PemeriksaanBalitaUncheckedCreateInput, 'balitaId'>) {
     // Validasi apakah balita ada
     await this.getBalitaDetail(balitaId);

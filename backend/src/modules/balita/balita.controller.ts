@@ -4,7 +4,6 @@ import { z } from 'zod';
 
 const balitaService = new BalitaService();
 
-// Zod validations mimicking frontend behavior exactly
 const createBalitaSchema = z.object({
   nama: z.string().min(2),
   tglLahir: z.string().transform((str) => new Date(str)),
@@ -17,7 +16,9 @@ const createBalitaSchema = z.object({
 const pemeriksaanBalitaSchema = z.object({
   bb: z.number().positive(),
   tb: z.number().positive().optional(),
-  statusGizi: z.string().min(2),
+  lingkarKepala: z.number().positive().optional(),
+  statusGizi: z.enum(['Baik', 'Kurang', 'Buruk', 'Lebih']),
+  catatanTindakan: z.string().optional(),
 });
 
 export class BalitaController {
@@ -33,7 +34,7 @@ export class BalitaController {
 
   async show(req: Request, res: Response, next: NextFunction) {
     try {
-      const id = parseInt(req.params.id);
+      const id = parseInt(req.params.id as string);
       const result = await balitaService.getBalitaDetail(id);
       res.json({ success: true, data: result });
     } catch (error) {
@@ -48,21 +49,33 @@ export class BalitaController {
       res.status(201).json({ success: true, data: result });
     } catch (error) {
       if (error instanceof z.ZodError) {
-        return res.status(400).json({ success: false, errors: error.errors });
+        return res.status(400).json({ success: false, errors: error.issues });
       }
+      next(error);
+    }
+  }
+
+  async update(req: Request, res: Response, next: NextFunction) {
+    try {
+      const id = parseInt(req.params.id as string);
+      const validatedData = createBalitaSchema.partial().parse(req.body);
+      const result = await balitaService.updateBalita(id, validatedData);
+      res.json({ success: true, data: result });
+    } catch (error) {
+      if (error instanceof z.ZodError) return res.status(400).json({ success: false, errors: error.issues });
       next(error);
     }
   }
 
   async storePemeriksaan(req: Request, res: Response, next: NextFunction) {
     try {
-      const balitaId = parseInt(req.params.id);
+      const balitaId = parseInt(req.params.id as string);
       const validatedData = pemeriksaanBalitaSchema.parse(req.body);
       const result = await balitaService.recordPemeriksaan(balitaId, validatedData);
       res.status(201).json({ success: true, data: result });
     } catch (error) {
       if (error instanceof z.ZodError) {
-        return res.status(400).json({ success: false, errors: error.errors });
+        return res.status(400).json({ success: false, errors: error.issues });
       }
       next(error);
     }

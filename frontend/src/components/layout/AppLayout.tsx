@@ -1,12 +1,15 @@
-import { Activity, Baby, Calendar, Users, Menu, LogOut, FileText } from "lucide-react";
+import { Activity, Baby, Calendar, Users, Menu, LogOut, FileText, UserCircle } from "lucide-react";
 import { Link, useNavigate, Outlet, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
+import { useAuth } from "@/context/AuthContext";
 
 export default function AppLayout() {
   const navigate = useNavigate();
   const location = useLocation();
+  const { user, logout } = useAuth();
 
   const handleLogout = () => {
+    logout();
     navigate("/login");
   };
 
@@ -53,6 +56,15 @@ export default function AppLayout() {
           </Link>
         </nav>
         <div className="p-4 border-t border-border/50">
+          <div className="flex items-center gap-3 px-4 py-3 mb-2">
+            <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary">
+              <UserCircle className="w-6 h-6" />
+            </div>
+            <div className="flex flex-col min-w-0">
+              <span className="text-sm font-semibold truncate">{user?.nama || 'Pengguna'}</span>
+              <span className="text-xs text-muted-foreground capitalize">{user?.role?.toLowerCase() || 'petugas'}</span>
+            </div>
+          </div>
           <Button variant="ghost" className="w-full justify-start text-destructive hover:text-destructive hover:bg-destructive/10" onClick={handleLogout}>
             <LogOut className="w-5 h-5 mr-3" />
             Keluar

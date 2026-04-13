@@ -15,4 +15,14 @@ export class JadwalService {
   async updateStatus(id: number, status: string) {
     return this.repository.update(id, { status });
   }
+
+  async getById(id: number) {
+    const item = await this.repository.findById(id);
+    if (!item) throw new Error("Jadwal not found");
+    return item;
+  }
+
+  async deleteJadwal(id: number) {
+    return this.repository.delete(id);
+  }
 }

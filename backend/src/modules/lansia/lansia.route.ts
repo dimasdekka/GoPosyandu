@@ -7,4 +7,5 @@ const controller = new LansiaController();
 lansiaRouter.get('/', controller.index);
 lansiaRouter.get('/:id', controller.show);
 lansiaRouter.post('/', controller.store);
+lansiaRouter.patch('/:id', controller.update);
 lansiaRouter.post('/:id/pemeriksaan', controller.storePemeriksaan);

@@ -18,6 +18,11 @@ export class RemajaService {
     return this.repository.create(data);
   }
 
+  async updateRemaja(id: number, data: Prisma.RemajaUpdateInput) {
+    await this.getDetail(id);
+    return this.repository.update(id, data);
+  }
+
   async recordPemeriksaan(remajaId: number, data: Omit<Prisma.PemeriksaanRemajaUncheckedCreateInput, 'remajaId'>) {
     await this.getDetail(remajaId);
     return this.repository.addPemeriksaan({ ...data, remajaId });

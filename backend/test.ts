@@ -1,0 +1,1 @@
+import { PrismaClient } from '@prisma/client'; const prisma = new PrismaClient(); async function main() { try { const res = await prisma.remaja.update({ where: { id: 2 }, data: { nama: 'Test' }}); console.log(res); } catch (e) { console.error('ERROR::::', e); } finally { await prisma.disconnect; } } main();

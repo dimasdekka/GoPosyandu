@@ -1,0 +1,70 @@
+PrismaClientValidationError: 
+Invalid `prisma.remaja.update()` invocation in
+C:\Users\Unicodes\Documents\Developments\GoPosyandu\backend\src\modules\remaja\remaja.repository.ts:24:26
+
+  21 }
+  22 
+  23 async update(id: number, data: Prisma.RemajaUpdateInput): Promise<Remaja> {
+→ 24   return prisma.remaja.update({
+         where: {
+           id: 2
+         },
+         data: {
+           nama: "Testing",
+           umur: 14,
+           jk: "L",
+           ~~
+           sekolah: "SMP 1",
+           alamat: "Jl. ABC",
+       ?   createdAt?: DateTime | DateTimeFieldUpdateOperationsInput,
+       ?   updatedAt?: DateTime | DateTimeFieldUpdateOperationsInput,
+       ?   pemeriksaan?: PemeriksaanRemajaUpdateManyWithoutRemajaNestedInput
+         }
+       })
+
+Unknown argument `jk`. Available options are marked with ?.
+    at throwValidationException (C:\Users\Unicodes\Documents\Developments\GoPosyandu\backend\node_modules\@prisma\client\src\runtime\core\errorRendering\throwValidationException.ts:46:9)
+    at Gr.handleRequestError (C:\Users\Unicodes\Documents\Developments\GoPosyandu\backend\node_modules\@prisma\client\src\runtime\RequestHandler.ts:211:7)
+    at Gr.handleAndLogRequestError (C:\Users\Unicodes\Documents\Developments\GoPosyandu\backend\node_modules\@prisma\client\src\runtime\RequestHandler.ts:183:12)
+    at Gr.request (C:\Users\Unicodes\Documents\Developments\GoPosyandu\backend\node_modules\@prisma\client\src\runtime\RequestHandler.ts:152:12)
+    at processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async a (C:\Users\Unicodes\Documents\Developments\GoPosyandu\backend\node_modules\@prisma\client\src\runtime\getPrismaClient.ts:938:24)
+    at async update (C:\Users\Unicodes\Documents\Developments\GoPosyandu\backend\src\modules\remaja\remaja.controller.ts:61:22)
+
+{"name":"PrismaClientValidationError","clientVersion":"7.7.0"}
+
+PrismaClientValidationError: 
+Invalid `prisma.remaja.update()` invocation in
+C:\Users\Unicodes\Documents\Developments\GoPosyandu\backend\src\modules\remaja\remaja.repository.ts:24:26
+
+  21 }
+  22 
+  23 async update(id: number, data: Prisma.RemajaUpdateInput): Promise<Remaja> {
+→ 24   return prisma.remaja.update({
+         where: {
+           id: 2
+         },
+         data: {
+           nama: "Testing",
+           umur: 14,
+           jk: "L",
+           ~~
+           sekolah: "SMP 1",
+           alamat: "Jl. ABC",
+       ?   createdAt?: DateTime | DateTimeFieldUpdateOperationsInput,
+       ?   updatedAt?: DateTime | DateTimeFieldUpdateOperationsInput,
+       ?   pemeriksaan?: PemeriksaanRemajaUpdateManyWithoutRemajaNestedInput
+         }
+       })
+
+Unknown argument `jk`. Available options are marked with ?.
+    at throwValidationException (C:\Users\Unicodes\Documents\Developments\GoPosyandu\backend\node_modules\@prisma\client\src\runtime\core\errorRendering\throwValidationException.ts:46:9)
+    at Gr.handleRequestError (C:\Users\Unicodes\Documents\Developments\GoPosyandu\backend\node_modules\@prisma\client\src\runtime\RequestHandler.ts:211:7)
+    at Gr.handleAndLogRequestError (C:\Users\Unicodes\Documents\Developments\GoPosyandu\backend\node_modules\@prisma\client\src\runtime\RequestHandler.ts:183:12)
+    at Gr.request (C:\Users\Unicodes\Documents\Developments\GoPosyandu\backend\node_modules\@prisma\client\src\runtime\RequestHandler.ts:152:12)
+    at processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async a (C:\Users\Unicodes\Documents\Developments\GoPosyandu\backend\node_modules\@prisma\client\src\runtime\getPrismaClient.ts:938:24)
+    at async update (C:\Users\Unicodes\Documents\Developments\GoPosyandu\backend\src\modules\remaja\remaja.controller.ts:61:22)
+
+{"name":"PrismaClientValidationError","clientVersion":"7.7.0"}
+

@@ -20,6 +20,13 @@ export class LansiaRepository {
     return prisma.lansia.create({ data });
   }
 
+  async update(id: number, data: Prisma.LansiaUpdateInput): Promise<Lansia> {
+    return prisma.lansia.update({
+      where: { id },
+      data
+    });
+  }
+
   async addPemeriksaan(data: Prisma.PemeriksaanLansiaUncheckedCreateInput): Promise<PemeriksaanLansia> {
     return prisma.pemeriksaanLansia.create({ data });
   }

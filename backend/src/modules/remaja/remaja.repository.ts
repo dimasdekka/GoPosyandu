@@ -20,6 +20,13 @@ export class RemajaRepository {
     return prisma.remaja.create({ data });
   }
 
+  async update(id: number, data: Prisma.RemajaUpdateInput): Promise<Remaja> {
+    return prisma.remaja.update({
+      where: { id },
+      data
+    });
+  }
+
   async addPemeriksaan(data: Prisma.PemeriksaanRemajaUncheckedCreateInput): Promise<PemeriksaanRemaja> {
     return prisma.pemeriksaanRemaja.create({ data });
   }

@@ -1,0 +1,2 @@
+-- AlterTable
+ALTER TABLE `lansia` ADD COLUMN `jk` VARCHAR(191) NOT NULL DEFAULT 'L';
