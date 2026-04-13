@@ -14,11 +14,16 @@ const createSchema = z.object({
 });
 
 const pemeriksaanSchema = z.object({
-  usiaKandungan: z.number().int().positive(),
+  usiaKandungan: z.number().int().min(0),
   tensiSistolik: z.number().int().positive().optional(),
   tensiDiastolik: z.number().int().positive().optional(),
   bb: z.number().positive().optional(),
-  statusRisiko: z.string(),
+  tb: z.number().positive().optional(),
+  lila: z.number().positive().optional(),
+  tfu: z.number().int().positive().optional(),
+  djj: z.number().int().positive().optional(),
+  keluhan: z.string().optional(),
+  statusRisiko: z.enum(['Normal', 'Risiko Rendah', 'Risiko Tinggi']),
 });
 
 export class IbuHamilController {
@@ -33,7 +38,7 @@ export class IbuHamilController {
 
   async show(req: Request, res: Response, next: NextFunction) {
     try {
-      const id = parseInt(req.params.id);
+      const id = parseInt(req.params.id as string);
       const result = await service.getDetail(id);
       res.json({ success: true, data: result });
     } catch (error) {
@@ -47,19 +52,31 @@ export class IbuHamilController {
       const result = await service.register(validatedData);
       res.status(201).json({ success: true, data: result });
     } catch (error) {
-      if (error instanceof z.ZodError) return res.status(400).json({ success: false, errors: error.errors });
+      if (error instanceof z.ZodError) return res.status(400).json({ success: false, errors: error.issues });
+      next(error);
+    }
+  }
+
+  async update(req: Request, res: Response, next: NextFunction) {
+    try {
+      const id = parseInt(req.params.id as string);
+      const validatedData = createSchema.partial().parse(req.body);
+      const result = await service.update(id, validatedData);
+      res.json({ success: true, data: result });
+    } catch (error) {
+      if (error instanceof z.ZodError) return res.status(400).json({ success: false, errors: error.issues });
       next(error);
     }
   }
 
   async storePemeriksaan(req: Request, res: Response, next: NextFunction) {
     try {
-      const id = parseInt(req.params.id);
+      const id = parseInt(req.params.id as string);
       const validatedData = pemeriksaanSchema.parse(req.body);
       const result = await service.recordPemeriksaan(id, validatedData);
       res.status(201).json({ success: true, data: result });
     } catch (error) {
-      if (error instanceof z.ZodError) return res.status(400).json({ success: false, errors: error.errors });
+      if (error instanceof z.ZodError) return res.status(400).json({ success: false, errors: error.issues });
       next(error);
     }
   }

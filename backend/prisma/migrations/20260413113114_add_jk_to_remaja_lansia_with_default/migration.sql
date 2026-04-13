@@ -1,0 +1,2 @@
+-- AlterTable
+ALTER TABLE `remaja` ADD COLUMN `jk` VARCHAR(191) NOT NULL DEFAULT 'L';

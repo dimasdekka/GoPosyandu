@@ -18,6 +18,11 @@ export class LansiaService {
     return this.repository.create(data);
   }
 
+  async updateLansia(id: number, data: Prisma.LansiaUpdateInput) {
+    await this.getDetail(id);
+    return this.repository.update(id, data);
+  }
+
   async recordPemeriksaan(lansiaId: number, data: Omit<Prisma.PemeriksaanLansiaUncheckedCreateInput, 'lansiaId'>) {
     await this.getDetail(lansiaId);
     return this.repository.addPemeriksaan({ ...data, lansiaId });

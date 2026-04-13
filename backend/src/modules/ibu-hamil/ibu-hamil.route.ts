@@ -7,4 +7,5 @@ const controller = new IbuHamilController();
 ibuHamilRouter.get('/', controller.index);
 ibuHamilRouter.get('/:id', controller.show);
 ibuHamilRouter.post('/', controller.store);
+ibuHamilRouter.patch('/:id', controller.update);
 ibuHamilRouter.post('/:id/pemeriksaan', controller.storePemeriksaan);

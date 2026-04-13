@@ -15,4 +15,12 @@ export class JadwalRepository {
   async update(id: number, data: Prisma.JadwalUpdateInput): Promise<Jadwal> {
     return prisma.jadwal.update({ where: { id }, data });
   }
+
+  async findById(id: number): Promise<Jadwal | null> {
+    return prisma.jadwal.findUnique({ where: { id } });
+  }
+
+  async delete(id: number): Promise<Jadwal> {
+    return prisma.jadwal.delete({ where: { id } });
+  }
 }

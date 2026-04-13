@@ -18,6 +18,11 @@ export class IbuHamilService {
     return this.repository.create(data);
   }
 
+  async update(id: number, data: Prisma.IbuHamilUpdateInput) {
+    await this.getDetail(id);
+    return this.repository.update(id, data);
+  }
+
   async recordPemeriksaan(ibuHamilId: number, data: Omit<Prisma.PemeriksaanIbuHamilUncheckedCreateInput, 'ibuHamilId'>) {
     await this.getDetail(ibuHamilId);
     return this.repository.addPemeriksaan({ ...data, ibuHamilId });

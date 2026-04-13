@@ -1,12 +1,15 @@
-import { Activity, Baby, Calendar, Users, Menu, LogOut, FileText } from "lucide-react";
+import { Activity, Baby, Calendar, Users, Menu, LogOut, FileText, UserCircle } from "lucide-react";
 import { Link, useNavigate, Outlet, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
+import { useAuth } from "@/context/AuthContext";
 
 export default function AppLayout() {
   const navigate = useNavigate();
   const location = useLocation();
+  const { user, logout } = useAuth();
 
   const handleLogout = () => {
+    logout();
     navigate("/login");
   };
 
@@ -15,12 +18,12 @@ export default function AppLayout() {
   return (
     <div className="min-h-screen bg-muted/30 flex flex-col md:flex-row">
       {/* Sidebar Desktop */}
-      <aside className="hidden md:flex flex-col w-64 bg-card border-r border-border fixed h-full z-10 shadow-sm">
+      <aside className="hidden md:flex flex-col w-64 bg-card border-r border-border fixed h-full z-10 shadow-sm print:hidden">
         <div className="p-6 flex items-center gap-3 border-b border-border/50">
           <div className="p-2 bg-primary/10 rounded-lg">
             <Activity className="w-6 h-6 text-primary" />
           </div>
-          <span className="font-Fraunces font-bold text-xl text-foreground">SIPosyandu</span>
+          <span className="font-bold text-xl text-foreground tracking-tight">SIPosyandu</span>
         </div>
         <nav className="flex-1 p-4 space-y-2">
           <Link to="/dashboard" className={`flex items-center gap-3 px-4 py-3 rounded-xl font-medium transition-colors ${isActive('/dashboard') ? 'bg-primary/10 text-primary' : 'text-muted-foreground hover:bg-muted hover:text-foreground'}`}>
@@ -53,6 +56,15 @@ export default function AppLayout() {
           </Link>
         </nav>
         <div className="p-4 border-t border-border/50">
+          <div className="flex items-center gap-3 px-4 py-3 mb-2">
+            <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary">
+              <UserCircle className="w-6 h-6" />
+            </div>
+            <div className="flex flex-col min-w-0">
+              <span className="text-sm font-semibold truncate">{user?.nama || 'Pengguna'}</span>
+              <span className="text-xs text-muted-foreground capitalize">{user?.role?.toLowerCase() || 'petugas'}</span>
+            </div>
+          </div>
           <Button variant="ghost" className="w-full justify-start text-destructive hover:text-destructive hover:bg-destructive/10" onClick={handleLogout}>
             <LogOut className="w-5 h-5 mr-3" />
             Keluar
@@ -61,12 +73,12 @@ export default function AppLayout() {
       </aside>
 
       {/* Main Content Area */}
-      <main className="flex-1 md:ml-64 p-4 md:p-8 pb-24 md:pb-8 flex flex-col space-y-6">
+      <main className="flex-1 md:ml-64 p-4 md:p-8 pb-24 md:pb-8 flex flex-col space-y-6 print:ml-0 print:p-0">
         {/* Header Mobile */}
-        <div className="md:hidden flex items-center justify-between mb-2">
+        <div className="md:hidden flex items-center justify-between mb-2 print:hidden">
           <div className="flex items-center gap-2">
             <Activity className="w-6 h-6 text-primary" />
-            <span className="font-Fraunces font-bold text-lg">SIPosyandu</span>
+            <span className="font-bold text-lg tracking-tight">SIPosyandu</span>
           </div>
           <Button variant="ghost" size="icon">
             <Menu className="w-6 h-6" />
@@ -78,7 +90,7 @@ export default function AppLayout() {
       </main>
 
       {/* Mobile Bottom Nav */}
-      <div className="md:hidden fixed bottom-0 left-0 right-0 bg-card border-t border-border flex justify-around p-3 z-50 shadow-[0_-4px_12px_rgba(0,0,0,0.05)]">
+      <div className="md:hidden fixed bottom-0 left-0 right-0 bg-card border-t border-border flex justify-around p-3 z-50 shadow-[0_-4px_12px_rgba(0,0,0,0.05)] print:hidden">
         <Link to="/dashboard" className={`flex flex-col items-center gap-1 ${isActive('/dashboard') ? 'text-primary' : 'text-muted-foreground'}`}>
           <Activity className="w-6 h-6" />
           <span className="text-[10px] font-medium">Beranda</span>
