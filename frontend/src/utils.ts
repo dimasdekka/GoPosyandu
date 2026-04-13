@@ -6,7 +6,9 @@ export function cn(...inputs: ClassValue[]) {
 }
 
 export function calculateAgePosyandu(birthDate: string | Date): string {
+  if (!birthDate) return "-";
   const born = new Date(birthDate);
+  if (isNaN(born.getTime())) return "-";
   const now = new Date();
   
   // Total diff in days

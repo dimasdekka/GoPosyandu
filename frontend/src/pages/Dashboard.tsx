@@ -70,6 +70,7 @@ export default function Dashboard() {
           return {
             id: b.id,
             nama: b.nama,
+            tglLahir: b.tglLahir,
             usiaBulan: bulan >= 0 ? bulan : 0,
             bb: latestP?.bb ?? null,
             statusGizi: latestP?.statusGizi ?? "Belum Diukur",

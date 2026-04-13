@@ -328,29 +328,33 @@ export default function IbuHamilDetail() {
             </div>
             {latestP && (
               <>
-                <div className="pt-2 border-t border-border/50 space-y-2">
-                  <p className="text-xs text-muted-foreground uppercase tracking-wide font-semibold">Data Terakhir</p>
-                  <div className="flex justify-between">
-                    <span className="text-muted-foreground">BB / TB</span>
-                    <span className="font-medium">
-                      {latestP.bb != null ? `${Number(latestP.bb).toFixed(1)} kg` : '-'} / {latestP.tb != null ? `${Number(latestP.tb).toFixed(1)} cm` : '-'}
-                    </span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-muted-foreground">LILA</span>
-                    <span className="font-medium">{latestP.lila != null ? `${Number(latestP.lila).toFixed(1)} cm` : '-'}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-muted-foreground">Tensi</span>
-                    <span className="font-medium">{latestP.tensiSistolik ? `${latestP.tensiSistolik}/${latestP.tensiDiastolik}` : '-'}</span>
-                  </div>
-                  <div className="flex justify-between text-primary font-medium">
-                    <span>TFU</span>
-                    <span>{latestP.tfu ? `${latestP.tfu} cm` : '-'}</span>
-                  </div>
-                  <div className="flex justify-between text-primary font-medium">
-                    <span>DJJ</span>
-                    <span>{latestP.djj ? `${latestP.djj} x/mnt` : '-'}</span>
+                <div className="pt-4 mt-2 border-t border-dashed border-border/60 space-y-4">
+                  <p className="text-[11px] font-bold text-muted-foreground uppercase tracking-widest text-center">Hasil Pemeriksaan Terakhir</p>
+                  <div className="space-y-3.5">
+                    <div className="flex justify-between items-end border-b border-dashed border-border/30 pb-1.5">
+                      <span className="text-muted-foreground text-[10px] uppercase font-bold">Tensi</span>
+                      <span className="font-bold text-sm">
+                        {latestP.tensiSistolik ? `${latestP.tensiSistolik}/${latestP.tensiDiastolik}` : '-'} <span className="text-[10px] font-normal text-muted-foreground ml-1">mmHg</span>
+                      </span>
+                    </div>
+                    <div className="flex justify-between items-end border-b border-dashed border-border/30 pb-1.5">
+                      <span className="text-muted-foreground text-[10px] uppercase font-bold">LILA</span>
+                      <span className="font-bold text-sm">
+                        {latestP.lila != null ? `${Number(latestP.lila).toFixed(1)} cm` : '-'}
+                      </span>
+                    </div>
+                    <div className="flex justify-between items-end border-b border-dashed border-border/30 pb-1.5">
+                      <span className="text-muted-foreground text-[10px] uppercase font-bold">Resiko & Klinis</span>
+                      <span className="font-bold text-sm text-primary">
+                        TFU: {latestP.tfu || '-'} cm <span className="mx-1 text-muted-foreground">•</span> DJJ: {latestP.djj || '-'} x/m
+                      </span>
+                    </div>
+                    <div className="flex justify-between items-end">
+                      <span className="text-muted-foreground text-[10px] uppercase font-bold">Berat & Tinggi</span>
+                      <span className="font-bold text-sm">
+                        BB: {latestP.bb != null ? Number(latestP.bb).toFixed(1) : '-'} kg <span className="mx-1 text-muted-foreground">|</span> TB: {latestP.tb != null ? Number(latestP.tb).toFixed(1) : '-'} cm
+                      </span>
+                    </div>
                   </div>
                 </div>
               </>
