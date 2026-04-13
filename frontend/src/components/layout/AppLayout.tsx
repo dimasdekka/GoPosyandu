@@ -29,11 +29,19 @@ export default function AppLayout() {
           </Link>
           <Link to="/balita" className={`flex items-center gap-3 px-4 py-3 rounded-xl font-medium transition-colors ${isActive('/balita') || location.pathname.startsWith('/balita/') ? 'bg-primary/10 text-primary' : 'text-muted-foreground hover:bg-muted hover:text-foreground'}`}>
             <Baby className="w-5 h-5" />
-            Data Balita
+            Balita & Anak
           </Link>
           <Link to="/ibu-hamil" className={`flex items-center gap-3 px-4 py-3 rounded-xl font-medium transition-colors ${isActive('/ibu-hamil') || location.pathname.startsWith('/ibu-hamil/') ? 'bg-primary/10 text-primary' : 'text-muted-foreground hover:bg-muted hover:text-foreground'}`}>
             <Users className="w-5 h-5" />
-            Ibu Hamil
+            Bumil & Busui
+          </Link>
+          <Link to="/remaja" className={`flex items-center gap-3 px-4 py-3 rounded-xl font-medium transition-colors ${isActive('/remaja') || location.pathname.startsWith('/remaja/') ? 'bg-primary/10 text-primary' : 'text-muted-foreground hover:bg-muted hover:text-foreground'}`}>
+            <Users className="w-5 h-5" />
+            Remaja
+          </Link>
+          <Link to="/lansia" className={`flex items-center gap-3 px-4 py-3 rounded-xl font-medium transition-colors ${isActive('/lansia') || location.pathname.startsWith('/lansia/') ? 'bg-primary/10 text-primary' : 'text-muted-foreground hover:bg-muted hover:text-foreground'}`}>
+            <Users className="w-5 h-5" />
+            Dewasa & Lansia
           </Link>
           <Link to="#" className="flex items-center gap-3 px-4 py-3 text-muted-foreground hover:bg-muted hover:text-foreground rounded-xl font-medium transition-colors">
             <Calendar className="w-5 h-5" />
@@ -77,11 +85,19 @@ export default function AppLayout() {
         </Link>
         <Link to="/balita" className={`flex flex-col items-center gap-1 ${isActive('/balita') || location.pathname.startsWith('/balita/') ? 'text-primary' : 'text-muted-foreground'}`}>
           <Baby className="w-6 h-6" />
-          <span className="text-[10px] font-medium">Balita</span>
+          <span className="text-[10px] font-medium">Anak</span>
         </Link>
         <Link to="/ibu-hamil" className={`flex flex-col items-center gap-1 ${isActive('/ibu-hamil') || location.pathname.startsWith('/ibu-hamil/') ? 'text-primary' : 'text-muted-foreground'}`}>
           <Users className="w-6 h-6" />
-          <span className="text-[10px] font-medium">Ibu Hamil</span>
+          <span className="text-[10px] font-medium">Ibu</span>
+        </Link>
+        <Link to="/remaja" className={`flex flex-col items-center gap-1 ${isActive('/remaja') || location.pathname.startsWith('/remaja/') ? 'text-primary' : 'text-muted-foreground'}`}>
+          <Users className="w-6 h-6" />
+          <span className="text-[10px] font-medium">Remaja</span>
+        </Link>
+        <Link to="/lansia" className={`flex flex-col items-center gap-1 ${isActive('/lansia') || location.pathname.startsWith('/lansia/') ? 'text-primary' : 'text-muted-foreground'}`}>
+          <Users className="w-6 h-6" />
+          <span className="text-[10px] font-medium">Lansia</span>
         </Link>
         <Link to="#" className="flex flex-col items-center gap-1 text-muted-foreground">
           <Calendar className="w-6 h-6" />
