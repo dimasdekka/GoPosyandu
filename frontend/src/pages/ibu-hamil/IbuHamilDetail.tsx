@@ -39,6 +39,7 @@ export default function IbuHamilDetail() {
 
   // Form State
   const [bb, setBb] = useState("");
+  const [tb, setTb] = useState("");
   const [tensiSistolik, setTensiSistolik] = useState("");
   const [tensiDiastolik, setTensiDiastolik] = useState("");
   const [lila, setLila] = useState("");
@@ -63,7 +64,7 @@ export default function IbuHamilDetail() {
   useEffect(() => { if (id) fetchDetail(); }, [id]);
 
   const resetForm = () => {
-    setBb(""); setTensiSistolik(""); setTensiDiastolik("");
+    setBb(""); setTb(""); setTensiSistolik(""); setTensiDiastolik("");
     setLila(""); setTfu(""); setDjj(""); setKeluhan("");
     setUsiaKandunganInput("");
     setStatusRisiko(""); setSubmitError(""); setSubmitSuccess(false);
@@ -101,12 +102,13 @@ export default function IbuHamilDetail() {
         return;
       }
       const payload: any = { usiaKandungan: uk, statusRisiko };
-      if (parseFloat(bb) > 0) payload.bb = parseFloat(bb);
-      if (parseInt(tensiSistolik) > 0) payload.tensiSistolik = parseInt(tensiSistolik);
-      if (parseInt(tensiDiastolik) > 0) payload.tensiDiastolik = parseInt(tensiDiastolik);
-      if (parseFloat(lila) > 0) payload.lila = parseFloat(lila);
-      if (parseInt(tfu) > 0) payload.tfu = parseInt(tfu);
-      if (parseInt(djj) > 0) payload.djj = parseInt(djj);
+      if (bb.trim() !== "") payload.bb = parseFloat(bb);
+      if (tb.trim() !== "") payload.tb = parseFloat(tb);
+      if (tensiSistolik.trim() !== "") payload.tensiSistolik = parseInt(tensiSistolik);
+      if (tensiDiastolik.trim() !== "") payload.tensiDiastolik = parseInt(tensiDiastolik);
+      if (lila.trim() !== "") payload.lila = parseFloat(lila);
+      if (tfu.trim() !== "") payload.tfu = parseInt(tfu);
+      if (djj.trim() !== "") payload.djj = parseInt(djj);
       if (keluhan.trim()) payload.keluhan = keluhan.trim();
 
       await axios.post(`/api/v1/ibu-hamil/${id}/pemeriksaan`, payload);
@@ -210,31 +212,36 @@ export default function IbuHamilDetail() {
                     <Input type="number" step="0.1" placeholder="Contoh: 62.5" value={bb} onChange={e => setBb(e.target.value)} />
                   </div>
                   <div className="space-y-1">
-                    <Label className="text-sm">LILA (cm) <span className="text-xs text-muted-foreground">Lingkar Lengan Atas</span></Label>
-                    <Input type="number" step="0.1" placeholder="Normal: ≥23.5 cm" value={lila} onChange={e => setLila(e.target.value)} />
+                    <Label className="text-sm">Tinggi Badan (cm)</Label>
+                    <Input type="number" step="0.1" placeholder="Contoh: 155" value={tb} onChange={e => setTb(e.target.value)} />
                   </div>
                 </div>
 
                 <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-1">
+                    <Label className="text-sm">LILA (cm) <span className="text-xs text-muted-foreground">Lingkar Lengan Atas</span></Label>
+                    <Input type="number" step="0.1" placeholder="Normal: ≥23.5 cm" value={lila} onChange={e => setLila(e.target.value)} />
+                  </div>
                   <div className="space-y-1">
                     <Label className="text-sm">Tensi Sistolik (mmHg)</Label>
                     <Input type="number" placeholder="Normal: 120" value={tensiSistolik} onChange={e => setTensiSistolik(e.target.value)} />
                   </div>
-                  <div className="space-y-1">
-                    <Label className="text-sm">Tensi Diastolik (mmHg)</Label>
-                    <Input type="number" placeholder="Normal: 80" value={tensiDiastolik} onChange={e => setTensiDiastolik(e.target.value)} />
-                  </div>
                 </div>
 
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-1">
+                    <Label className="text-sm">Tensi Diastolik (mmHg)</Label>
+                    <Input type="number" placeholder="Normal: 80" value={tensiDiastolik} onChange={e => setTensiDiastolik(e.target.value)} />
+                  </div>
+                  <div className="space-y-1">
                     <Label className="text-sm">TFU (cm) <span className="text-xs text-muted-foreground">Tinggi Fundus Uteri</span></Label>
                     <Input type="number" placeholder="Sesuai usia kehamilan" value={tfu} onChange={e => setTfu(e.target.value)} />
                   </div>
-                  <div className="space-y-1">
-                    <Label className="text-sm">DJJ (x/mnt) <span className="text-xs text-muted-foreground">Denyut Jantung Janin</span></Label>
-                    <Input type="number" placeholder="Normal: 120–160" value={djj} onChange={e => setDjj(e.target.value)} />
-                  </div>
+                </div>
+
+                <div className="space-y-1">
+                  <Label className="text-sm">DJJ (x/mnt) <span className="text-xs text-muted-foreground">Denyut Jantung Janin</span></Label>
+                  <Input type="number" placeholder="Normal: 120–160" value={djj} onChange={e => setDjj(e.target.value)} />
                 </div>
 
                 <div className="space-y-1">
@@ -324,16 +331,26 @@ export default function IbuHamilDetail() {
                 <div className="pt-2 border-t border-border/50 space-y-2">
                   <p className="text-xs text-muted-foreground uppercase tracking-wide font-semibold">Data Terakhir</p>
                   <div className="flex justify-between">
-                    <span className="text-muted-foreground">Berat Badan</span>
-                    <span className="font-medium">{latestP.bb ? `${latestP.bb} kg` : '-'}</span>
+                    <span className="text-muted-foreground">BB / TB</span>
+                    <span className="font-medium">
+                      {latestP.bb != null ? `${Number(latestP.bb).toFixed(1)} kg` : '-'} / {latestP.tb != null ? `${Number(latestP.tb).toFixed(1)} cm` : '-'}
+                    </span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-muted-foreground">LILA</span>
-                    <span className="font-medium">{latestP.lila ? `${latestP.lila} cm` : '-'}</span>
+                    <span className="font-medium">{latestP.lila != null ? `${Number(latestP.lila).toFixed(1)} cm` : '-'}</span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-muted-foreground">Tensi</span>
                     <span className="font-medium">{latestP.tensiSistolik ? `${latestP.tensiSistolik}/${latestP.tensiDiastolik}` : '-'}</span>
+                  </div>
+                  <div className="flex justify-between text-primary font-medium">
+                    <span>TFU</span>
+                    <span>{latestP.tfu ? `${latestP.tfu} cm` : '-'}</span>
+                  </div>
+                  <div className="flex justify-between text-primary font-medium">
+                    <span>DJJ</span>
+                    <span>{latestP.djj ? `${latestP.djj} x/mnt` : '-'}</span>
                   </div>
                 </div>
               </>
@@ -361,7 +378,7 @@ export default function IbuHamilDetail() {
                   <TableHead>Tanggal</TableHead>
                   <TableHead>UK (mgg)</TableHead>
                   <TableHead>Tensi</TableHead>
-                  <TableHead>BB / LILA</TableHead>
+                  <TableHead>BB / TB / LILA</TableHead>
                   <TableHead>TFU / DJJ</TableHead>
                   <TableHead>Status Risiko</TableHead>
                   <TableHead>Keluhan</TableHead>
@@ -384,8 +401,9 @@ export default function IbuHamilDetail() {
                       </TableCell>
                       <TableCell>
                         <div className="text-sm">
-                          <div>{r.bb ? `BB: ${r.bb} kg` : '-'}</div>
-                          <div className="text-muted-foreground">{r.lila ? `LILA: ${r.lila} cm` : ''}</div>
+                          <div>{r.bb != null ? `${Number(r.bb).toFixed(1)} kg` : '-'}</div>
+                          <div className="text-muted-foreground">{r.tb != null ? `${Number(r.tb).toFixed(1)} cm` : ''}</div>
+                          <div className="text-muted-foreground">{r.lila != null ? `LILA: ${Number(r.lila).toFixed(1)} cm` : ''}</div>
                         </div>
                       </TableCell>
                       <TableCell>

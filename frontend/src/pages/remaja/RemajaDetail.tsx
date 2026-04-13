@@ -257,11 +257,10 @@ export default function RemajaDetail() {
             {latestP && (
               <div className="pt-2 border-t border-border/50 space-y-2">
                 <p className="text-xs text-muted-foreground uppercase tracking-wide font-semibold">Pemeriksaan Terakhir</p>
-                <div className="flex justify-between"><span className="text-muted-foreground">BB</span><span>{latestP.bb ? `${latestP.bb} kg` : '-'}</span></div>
-                <div className="flex justify-between"><span className="text-muted-foreground">TB</span><span>{latestP.tb ? `${latestP.tb} cm` : '-'}</span></div>
+                <div className="flex justify-between"><span className="text-muted-foreground">BB / TB</span><span>{latestP.bb != null ? `${Number(latestP.bb).toFixed(1)} kg` : '-'} / {latestP.tb != null ? `${Number(latestP.tb).toFixed(1)} cm` : '-'}</span></div>
                 <div className="flex justify-between"><span className="text-muted-foreground">Tensi</span><span>{latestP.tensiSistolik ? `${latestP.tensiSistolik}/${latestP.tensiDiastolik}` : '-'}</span></div>
-                <div className="flex justify-between"><span className="text-muted-foreground">Kadar Hb</span><span>{latestP.kadarHb ? `${latestP.kadarHb} g/dL` : '-'}</span></div>
-                <div className="flex justify-between"><span className="text-muted-foreground">Lingkar Perut</span><span>{latestP.lingkarPerut ? `${latestP.lingkarPerut} cm` : '-'}</span></div>
+                <div className="flex justify-between"><span className="text-muted-foreground">Kadar Hb</span><span>{latestP.kadarHb != null ? `${Number(latestP.kadarHb).toFixed(1)} g/dL` : '-'}</span></div>
+                <div className="flex justify-between"><span className="text-muted-foreground">Lingkar Perut</span><span>{latestP.lingkarPerut != null ? `${Number(latestP.lingkarPerut).toFixed(1)} cm` : '-'}</span></div>
               </div>
             )}
             <div className="pt-2 border-t border-border/50">
@@ -296,15 +295,15 @@ export default function RemajaDetail() {
                         {new Date(r.tglPeriksa || r.createdAt).toLocaleDateString('id-ID')}
                       </TableCell>
                       <TableCell className="text-sm">
-                        <div>{r.bb ? `${r.bb} kg` : '-'}</div>
-                        <div className="text-muted-foreground">{r.tb ? `${r.tb} cm` : ''}</div>
+                        <div>{r.bb != null ? `${Number(r.bb).toFixed(1)} kg` : '-'}</div>
+                        <div className="text-muted-foreground">{r.tb != null ? `${Number(r.tb).toFixed(1)} cm` : ''}</div>
                       </TableCell>
                       <TableCell>
                         {r.tensiSistolik ? `${r.tensiSistolik}/${r.tensiDiastolik}` : '-'}
                       </TableCell>
                       <TableCell className="text-sm">
-                        <div>{r.kadarHb ? `Hb: ${r.kadarHb} g/dL` : '-'}</div>
-                        <div className="text-muted-foreground">{r.lingkarPerut ? `LP: ${r.lingkarPerut} cm` : ''}</div>
+                        <div>{r.kadarHb != null ? `Hb: ${Number(r.kadarHb).toFixed(1)} g/dL` : '-'}</div>
+                        <div className="text-muted-foreground">{r.lingkarPerut != null ? `LP: ${Number(r.lingkarPerut).toFixed(1)} cm` : ''}</div>
                       </TableCell>
                       <TableCell>
                         <Badge variant="outline" className={`border ${getStatusBadge(r.statusGizi)}`}>

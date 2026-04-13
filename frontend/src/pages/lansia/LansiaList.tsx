@@ -21,6 +21,8 @@ const lansiaSchema = z.object({
   umur: z.string().min(1, "Wajib diisi"),
   jk: z.enum(["L", "P"], { message: "Pilih jenis kelamin" }),
   alamat: z.string().min(5, "Alamat wajib diisi"),
+  bb: z.string().optional(),
+  tb: z.string().optional(),
 });
 type FormValues = z.infer<typeof lansiaSchema>;
 
@@ -63,6 +65,8 @@ export default function LansiaList() {
           alamat: item.alamat, 
           tensi, 
           gula, 
+          bb: latestP?.bb ?? null,
+          tb: latestP?.tb ?? null,
           resikoPTM 
         };
       });
@@ -89,8 +93,21 @@ export default function LansiaList() {
 
   const onAdd = async (values: FormValues) => {
     try {
-      setSubmitting(true);
-      await axios.post('/api/v1/lansia', { ...values, umur: parseInt(values.umur) });
+      const res = await axios.post('/api/v1/lansia', { 
+        nama: values.nama,
+        umur: parseInt(values.umur),
+        jk: values.jk,
+        alamat: values.alamat
+      });
+
+      const newId = res.data.data.id;
+      if (newId && (values.bb || values.tb)) {
+        const payload: any = { resikoPTM: "Rendah" };
+        if (values.bb) payload.bb = parseFloat(values.bb);
+        if (values.tb) payload.tb = parseFloat(values.tb);
+        await axios.post(`/api/v1/lansia/${newId}/pemeriksaan`, payload);
+      }
+
       setIsAddOpen(false); addForm.reset(); fetchLansia();
     } catch (err) { console.error(err); } finally { setSubmitting(false); }
   };
@@ -136,6 +153,18 @@ export default function LansiaList() {
       <FormField control={control} name="alamat" render={({ field }) => (
         <FormItem><FormLabel>Alamat Lengkap</FormLabel><FormControl><Input placeholder="Alamat rumah..." {...field} /></FormControl><FormMessage /></FormItem>
       )} />
+
+      <div className="pt-2 border-t border-border/50 mt-4">
+        <p className="text-xs font-semibold text-primary uppercase tracking-wider mb-3">Hasil Pemeriksaan Hari Ini (Opsional)</p>
+        <div className="grid grid-cols-2 gap-3">
+          <FormField control={control} name="bb" render={({ field }) => (
+            <FormItem><FormLabel className="text-xs text-muted-foreground">BB (kg)</FormLabel><FormControl><Input type="number" step="0.1" placeholder="60" {...field} /></FormControl><FormMessage /></FormItem>
+          )} />
+          <FormField control={control} name="tb" render={({ field }) => (
+            <FormItem><FormLabel className="text-xs text-muted-foreground">TB (cm)</FormLabel><FormControl><Input type="number" step="0.1" placeholder="155" {...field} /></FormControl><FormMessage /></FormItem>
+          )} />
+        </div>
+      </div>
     </>
   );
 
@@ -242,8 +271,14 @@ export default function LansiaList() {
                     {item.umur} Tahun
                   </TableCell>
                   <TableCell className="text-sm">
-                    <div>Tensi: {item.tensi}</div>
-                    <div className="text-muted-foreground">Gula: {item.gula != null ? `${item.gula} mg/dL` : '-'}</div>
+                    <div className="font-medium">Tensi: {item.tensi}</div>
+                    <div className="text-muted-foreground text-[11px] flex flex-wrap gap-x-2">
+                       <span>Gula: {item.gula != null ? `${item.gula} mg/dL` : '-'}</span>
+                       <span className="opacity-30">|</span>
+                       <span>BB: {item.bb != null ? Number(item.bb).toFixed(1) : '-'}</span>
+                       <span className="opacity-30">|</span>
+                       <span>TB: {item.tb != null ? Number(item.tb).toFixed(1) : '-'}</span>
+                    </div>
                   </TableCell>
                   <TableCell>
                     <Badge variant="outline" className={`border ${getStatusBadge(item.resikoPTM)}`}>{item.resikoPTM}</Badge>

@@ -3,6 +3,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { ArrowLeft, Plus, Calendar as CalendarIcon, Activity, Baby, Info, CheckCircle2 } from "lucide-react";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from "recharts";
 import axios from "axios";
+import { calculateAgePosyandu } from "@/utils";
 
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -136,11 +137,8 @@ export default function BalitaDetail() {
     whoMax: getWhoMax(idx).toFixed(1),
   }));
 
-  // Hitung usia dalam bulan (lebih akurat)
-  const tglLahir = new Date(balita.tglLahir);
-  const today = new Date();
-  const usiaBulan = (today.getFullYear() - tglLahir.getFullYear()) * 12 + (today.getMonth() - tglLahir.getMonth());
-  const usiaTampil = usiaBulan >= 12 ? `${Math.floor(usiaBulan / 12)} Thn ${usiaBulan % 12} Bln` : `${usiaBulan} Bulan`;
+  // Hitung usia menggunakan utility khusus Posyandu
+  const usiaTampil = calculateAgePosyandu(balita.tglLahir);
 
   return (
     <div className="space-y-6">
@@ -291,15 +289,15 @@ export default function BalitaDetail() {
               </div>
               <div className="flex justify-between p-4 bg-primary/5">
                 <dt className="text-primary font-medium">BB Terakhir</dt>
-                <dd className="font-bold text-primary">{latestPemeriksaan?.bb ?? "-"} kg</dd>
+                <dd className="font-bold text-primary">{latestPemeriksaan?.bb?.toFixed(1) ?? "-"} kg</dd>
               </div>
               <div className="flex justify-between p-4 bg-primary/5">
                 <dt className="text-primary font-medium">TB Terakhir</dt>
-                <dd className="font-bold text-primary">{latestPemeriksaan?.tb ?? "-"} cm</dd>
+                <dd className="font-bold text-primary">{latestPemeriksaan?.tb?.toFixed(1) ?? "-"} cm</dd>
               </div>
               <div className="flex justify-between p-4 bg-primary/5">
                 <dt className="text-primary font-medium">Lingkar Kepala</dt>
-                <dd className="font-bold text-primary">{latestPemeriksaan?.lingkarKepala ?? "-"} cm</dd>
+                <dd className="font-bold text-primary">{latestPemeriksaan?.lingkarKepala?.toFixed(1) ?? "-"} cm</dd>
               </div>
               <div className="p-4 space-y-1">
                 <dt className="text-muted-foreground">Alamat</dt>
@@ -365,9 +363,9 @@ export default function BalitaDetail() {
                     <TableCell className="font-medium">
                       {new Date(r.tglUkur || r.createdAt).toLocaleDateString('id-ID')}
                     </TableCell>
-                    <TableCell className="font-bold text-primary">{r.bb}</TableCell>
-                    <TableCell>{r.tb ?? "-"}</TableCell>
-                    <TableCell>{r.lingkarKepala ? `${r.lingkarKepala} cm` : "-"}</TableCell>
+                    <TableCell className="font-medium">{r.bb != null ? `${Number(r.bb).toFixed(1)} kg` : "-"}</TableCell>
+                    <TableCell>{r.tb?.toFixed(1) ?? "-"}</TableCell>
+                    <TableCell>{r.lingkarKepala ? `${r.lingkarKepala.toFixed(1)} cm` : "-"}</TableCell>
                     <TableCell>
                       <Badge variant="outline" className={`shadow-none font-medium border ${getStatusGiziBadge(r.statusGizi)}`}>
                         {r.statusGizi}

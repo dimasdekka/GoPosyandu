@@ -1,6 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -9,31 +6,39 @@ datasource db {
   provider = "mysql"
 }
 
-// Enum Definitions
-enum Role {
-  ADMIN
-  KADER
-  PUSKESMAS
-  MASYARAKAT
+model Balita {
+  id                Int                 @id @default(autoincrement())
+  nama              String
+  tglLahir          DateTime
+  jk                BalitaJK
+  ibu               String
+  ayah              String
+  alamat            String
+  createdAt         DateTime            @default(now())
+  updatedAt         DateTime            @updatedAt
+  pemeriksaan       PemeriksaanBalita[]
+
+  @@map("balita")
 }
 
-enum JenisKelamin {
+enum BalitaJK {
   L
   P
 }
 
-// ------------------------------------
-// CORE ENTITIES
-// ------------------------------------
+model IbuHamil {
+  id                  Int                   @id @default(autoincrement())
+  nama                String
+  tglLahir            DateTime
+  hpht                DateTime
+  suami               String
+  alamat              String
+  noTelepon           String
+  createdAt           DateTime              @default(now())
+  updatedAt           DateTime              @updatedAt
+  pemeriksaan         PemeriksaanIbuHamil[]
 
-model User {
-  id        Int      @id @default(autoincrement())
-  nama      String
-  username  String   @unique
-  password  String
-  role      Role     @default(KADER)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  @@map("ibuhamil")
 }
 
 model Jadwal {
@@ -45,156 +50,125 @@ model Jadwal {
   status    String   @default("Akan Datang")
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  @@map("jadwal")
 }
 
-// ------------------------------------
-// SASARAN: BALITA & ANAK
-// ------------------------------------
+model Lansia {
+  id                Int                 @id @default(autoincrement())
+  nama              String
+  umur              Int
+  alamat            String
+  createdAt         DateTime            @default(now())
+  updatedAt         DateTime            @updatedAt
+  jk                String              @default("L")
+  pemeriksaan       PemeriksaanLansia[]
 
-model Balita {
-  id          Int      @id @default(autoincrement())
-  nama        String
-  tglLahir    DateTime
-  jk          JenisKelamin
-  ibu         String
-  ayah        String
-  alamat      String
-  
-  // Relations
-  pemeriksaan PemeriksaanBalita[]
-  
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  @@map("lansia")
 }
 
 model PemeriksaanBalita {
   id              Int      @id @default(autoincrement())
   balitaId        Int
-  balita          Balita   @relation(fields: [balitaId], references: [id], onDelete: Cascade)
-  
   tglUkur         DateTime @default(now())
-  bb              Float    // dalam kg
-  tb              Float?   // dalam cm
-  lingkarKepala   Float?   // dalam cm - deteksi stunting
-  statusGizi      String   // "Baik", "Kurang", "Buruk", "Lebih"
-  catatanTindakan String?  @db.Text // Vitamin A, Obat Cacing, Imunisasi, dll
-  
+  bb              Float
+  tb              Float?
+  lingkarKepala   Float?
+  statusGizi      String
+  catatanTindakan String?  @db.Text
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
-}
+  balita          Balita   @relation(fields: [balitaId], references: [id], onDelete: Cascade)
 
-// ------------------------------------
-// SASARAN: IBU HAMIL & MENYUSUI
-// ------------------------------------
-
-model IbuHamil {
-  id          Int      @id @default(autoincrement())
-  nama        String
-  tglLahir    DateTime
-  hpht        DateTime
-  suami       String
-  alamat      String
-  noTelepon   String
-  
-  // Relations
-  pemeriksaan PemeriksaanIbuHamil[]
-  
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  @@index([balitaId])
+  @@map("pemeriksaanbalita")
 }
 
 model PemeriksaanIbuHamil {
   id             Int      @id @default(autoincrement())
   ibuHamilId     Int
-  ibuHamil       IbuHamil @relation(fields: [ibuHamilId], references: [id], onDelete: Cascade)
-  
   tglPeriksa     DateTime @default(now())
-  usiaKandungan  Int      // dalam minggu
+  usiaKandungan  Int
   tensiSistolik  Int?
   tensiDiastolik Int?
   bb             Float?
-  lila           Float?   // Lingkar Lengan Atas - deteksi KEK
-  tfu            Int?     // Tinggi Fundus Uteri (cm)
-  djj            Int?     // Denyut Jantung Janin per menit
+  tb             Float?
+  lila           Float?
+  tfu            Int?
+  djj            Int?
   keluhan        String?  @db.Text
-  statusRisiko   String   // "Normal", "Risiko Rendah", "Risiko Tinggi"
-  
+  statusRisiko   String
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
-}
+  ibuHamil       IbuHamil @relation(fields: [ibuHamilId], references: [id], onDelete: Cascade)
 
-// ------------------------------------
-// SASARAN: REMAJA
-// ------------------------------------
-
-model Remaja {
-  id          Int      @id @default(autoincrement())
-  nama        String
-  umur        Int
-  jk          String   @default("L") // "L" / "P"
-  sekolah     String
-  alamat      String
-  
-  // Relations
-  pemeriksaan PemeriksaanRemaja[]
-  
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-}
-
-model PemeriksaanRemaja {
-  id             Int      @id @default(autoincrement())
-  remajaId       Int
-  remaja         Remaja   @relation(fields: [remajaId], references: [id], onDelete: Cascade)
-  
-  tglPeriksa     DateTime @default(now())
-  bb             Float?
-  tb             Float?   // Tinggi Badan untuk IMT
-  tensiSistolik  Int?
-  tensiDiastolik Int?
-  lingkarPerut   Float?   // cm
-  kadarHb        Float?   // Hemoglobin g/dL - deteksi anemia
-  statusGizi     String   // "Normal", "Kurang", "Lebih", "Anemia"
-  catatanEdukasi String?  @db.Text
-  
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
-}
-
-// ------------------------------------
-// SASARAN: DEWASA & LANSIA
-// ------------------------------------
-
-model Lansia {
-  id          Int      @id @default(autoincrement())
-  nama        String
-  umur        Int
-  jk          String   @default("L") // "L" / "P"
-  alamat      String
-  
-  // Relations
-  pemeriksaan PemeriksaanLansia[]
-  
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  @@index([ibuHamilId])
+  @@map("pemeriksaanibuhamil")
 }
 
 model PemeriksaanLansia {
   id             Int      @id @default(autoincrement())
   lansiaId       Int
-  lansia         Lansia   @relation(fields: [lansiaId], references: [id], onDelete: Cascade)
-  
   tglPeriksa     DateTime @default(now())
-  bb             Float?   // kg
-  tb             Float?   // cm - untuk IMT
+  bb             Float?
+  tb             Float?
   tensiSistolik  Int?
   tensiDiastolik Int?
-  gulaDarah      Int?     // mg/dL
-  asamUrat       Float?   // mg/dL
-  kolesterol     Int?     // mg/dL
+  gulaDarah      Int?
+  asamUrat       Float?
+  kolesterol     Int?
   keluhan        String?  @db.Text
-  resikoPTM      String   // "Rendah", "Sedang", "Tinggi"
-  
+  resikoPTM      String
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
+  lansia         Lansia   @relation(fields: [lansiaId], references: [id], onDelete: Cascade)
+
+  @@index([lansiaId])
+  @@map("pemeriksaanlansia")
+}
+
+model Remaja {
+  id                Int                 @id @default(autoincrement())
+  nama              String
+  umur              Int
+  jk                String
+  sekolah           String
+  alamat            String
+  createdAt         DateTime            @default(now())
+  updatedAt         DateTime            @updatedAt
+  pemeriksaan       PemeriksaanRemaja[]
+
+  @@map("remaja")
+}
+
+model PemeriksaanRemaja {
+  id             Int      @id @default(autoincrement())
+  remajaId       Int
+  tglPeriksa     DateTime @default(now())
+  bb             Float?
+  tb             Float?
+  tensiSistolik  Int?
+  tensiDiastolik Int?
+  lingkarPerut   Float?
+  kadarHb        Float?
+  statusGizi     String
+  catatanEdukasi String?  @db.Text
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+  remaja         Remaja   @relation(fields: [remajaId], references: [id], onDelete: Cascade)
+
+  @@index([remajaId])
+  @@map("pemeriksaanremaja")
+}
+
+model User {
+  id        Int      @id @default(autoincrement())
+  username  String   @unique
+  password  String
+  nama      String
+  role      String   @default("KADER")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("user")
 }

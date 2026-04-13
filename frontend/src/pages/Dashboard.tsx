@@ -6,6 +6,7 @@ import { Table, TableCell, TableHead, TableHeader, TableRow, TableBody } from "@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import axios from "axios";
+import { calculateAgePosyandu } from "@/utils";
 
 const getStatusGiziBadge = (status: string) => {
   switch (status) {
@@ -152,7 +153,7 @@ export default function Dashboard() {
             {loadingStats ? (
               <div className="h-full bg-muted animate-pulse rounded-lg" />
             ) : (
-              <ResponsiveContainer width="100%" height="100%">
+              <ResponsiveContainer width="100%" height="100%" style={{ fontFamily: 'Outfit, sans-serif' }}>
                 <BarChart data={grafikData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
                   <XAxis dataKey="name" stroke="#888888" fontSize={12} tickLine={false} axisLine={false} />
                   <YAxis stroke="#888888" fontSize={12} tickLine={false} axisLine={false} allowDecimals={false} />
@@ -240,8 +241,8 @@ export default function Dashboard() {
                       {b.nama}
                     </Link>
                   </TableCell>
-                  <TableCell className="text-muted-foreground text-sm">{b.usiaBulan} bln</TableCell>
-                  <TableCell className="font-medium">{b.bb != null ? `${b.bb} kg` : "-"}</TableCell>
+                  <TableCell className="text-muted-foreground text-sm">{calculateAgePosyandu(b.tglLahir)}</TableCell>
+                  <TableCell className="font-medium">{b.bb != null ? `${Number(b.bb).toFixed(1)} kg` : "-"}</TableCell>
                   <TableCell>
                     <Badge variant="outline" className={`shadow-none text-xs border ${getStatusGiziBadge(b.statusGizi)}`}>
                       {b.statusGizi}

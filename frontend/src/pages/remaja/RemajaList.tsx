@@ -22,6 +22,8 @@ const remajaSchema = z.object({
   jk: z.enum(["L", "P"], { message: "Pilih jenis kelamin" }),
   sekolah: z.string().min(2, "Nama sekolah wajib diisi"),
   alamat: z.string().min(5, "Alamat wajib diisi"),
+  bb: z.string().optional(),
+  tb: z.string().optional(),
 });
 type FormValues = z.infer<typeof remajaSchema>;
 
@@ -66,6 +68,7 @@ export default function RemajaList() {
           alamat: item.alamat, 
           tensi, 
           bb, 
+          tb: latestP?.tb ?? null,
           statusGizi 
         };
       });
@@ -93,8 +96,22 @@ export default function RemajaList() {
 
   const onAdd = async (values: FormValues) => {
     try {
-      setSubmitting(true);
-      await axios.post('/api/v1/remaja', { ...values, umur: parseInt(values.umur) });
+      const res = await axios.post('/api/v1/remaja', { 
+        nama: values.nama,
+        umur: parseInt(values.umur),
+        jk: values.jk,
+        sekolah: values.sekolah,
+        alamat: values.alamat
+      });
+
+      const newId = res.data.data.id;
+      if (newId && (values.bb || values.tb)) {
+        const payload: any = { statusGizi: "Normal" };
+        if (values.bb) payload.bb = parseFloat(values.bb);
+        if (values.tb) payload.tb = parseFloat(values.tb);
+        await axios.post(`/api/v1/remaja/${newId}/pemeriksaan`, payload);
+      }
+
       setIsAddOpen(false); addForm.reset(); fetchRemaja();
     } catch (err) { console.error(err); } finally { setSubmitting(false); }
   };
@@ -143,6 +160,18 @@ export default function RemajaList() {
       <FormField control={control} name="alamat" render={({ field }) => (
         <FormItem><FormLabel>Alamat Lengkap</FormLabel><FormControl><Input placeholder="Alamat rumah..." {...field} /></FormControl><FormMessage /></FormItem>
       )} />
+      
+      <div className="pt-2 border-t border-border/50 mt-4">
+        <p className="text-xs font-semibold text-primary uppercase tracking-wider mb-3">Hasil Pemeriksaan Hari Ini (Opsional)</p>
+        <div className="grid grid-cols-2 gap-3">
+          <FormField control={control} name="bb" render={({ field }) => (
+            <FormItem><FormLabel className="text-xs text-muted-foreground">BB (kg)</FormLabel><FormControl><Input type="number" step="0.1" placeholder="60" {...field} /></FormControl><FormMessage /></FormItem>
+          )} />
+          <FormField control={control} name="tb" render={({ field }) => (
+            <FormItem><FormLabel className="text-xs text-muted-foreground">TB (cm)</FormLabel><FormControl><Input type="number" step="0.1" placeholder="165" {...field} /></FormControl><FormMessage /></FormItem>
+          )} />
+        </div>
+      </div>
     </>
   );
 
@@ -252,7 +281,11 @@ export default function RemajaList() {
                   </TableCell>
                   <TableCell className="text-sm">
                     <div>Tensi: {item.tensi}</div>
-                    <div className="text-muted-foreground">BB: {item.bb != null ? `${item.bb} kg` : '-'}</div>
+                    <div className="flex items-center gap-1.5 text-muted-foreground">
+                      <span>BB: {item.bb != null ? Number(item.bb).toFixed(1) : '-'}</span>
+                      <span className="opacity-30">|</span>
+                      <span>TB: {item.tb != null ? Number(item.tb).toFixed(1) : '-'}</span>
+                    </div>
                   </TableCell>
                   <TableCell>
                     <Badge variant="outline" className={`border ${getStatusBadge(item.statusGizi)}`}>{item.statusGizi}</Badge>

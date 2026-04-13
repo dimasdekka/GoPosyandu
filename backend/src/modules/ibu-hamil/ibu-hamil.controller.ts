@@ -18,6 +18,7 @@ const pemeriksaanSchema = z.object({
   tensiSistolik: z.number().int().positive().optional(),
   tensiDiastolik: z.number().int().positive().optional(),
   bb: z.number().positive().optional(),
+  tb: z.number().positive().optional(),
   lila: z.number().positive().optional(),
   tfu: z.number().int().positive().optional(),
   djj: z.number().int().positive().optional(),

@@ -23,6 +23,10 @@ const ibuHamilSchema = z.object({
   suami: z.string().min(2, "Nama suami wajib diisi"),
   alamat: z.string().min(5, "Alamat wajib diisi"),
   noTelepon: z.string().min(10, "Nomor telepon tidak valid"),
+  bb: z.string().optional(),
+  tb: z.string().optional(),
+  tfu: z.string().optional(),
+  djj: z.string().optional(),
 }).refine(data => data.hpht || data.usiaKandungan, {
   message: "HPHT atau Usia Kandungan wajib diisi",
   path: ["hpht"],
@@ -59,6 +63,9 @@ export default function IbuHamilList() {
         const latestP = item.pemeriksaan?.[0] ?? null;
         const tensi = latestP ? `${latestP.tensiSistolik ?? '-'}/${latestP.tensiDiastolik ?? '-'}` : "-";
         const bb = latestP?.bb ?? null;
+        const tb = latestP?.tb ?? null;
+        const tfu = latestP?.tfu ?? null;
+        const djj = latestP?.djj ?? null;
         const statusRisiko = latestP?.statusRisiko ?? "Belum Dievaluasi";
 
         const hphtDate = new Date(item.hpht);
@@ -66,13 +73,11 @@ export default function IbuHamilList() {
         
         let usiaKandungan = 0;
         if (latestP && latestP.usiaKandungan) {
-          // Jika ada pemeriksaan, gunakan usia dari pemeriksaan + selisih minggu sejak pemeriksaan
           const checkupDate = new Date(latestP.tglPeriksa || latestP.createdAt);
           const diffTimeP = now.getTime() - checkupDate.getTime();
           const diffWeeksP = Math.floor(diffTimeP / (1000 * 60 * 60 * 24 * 7));
           usiaKandungan = latestP.usiaKandungan + diffWeeksP;
         } else {
-          // Jika belum ada pemeriksaan, hitung dari HPHT
           const diffTime = now.getTime() - hphtDate.getTime();
           const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
           usiaKandungan = Math.max(0, Math.floor(diffDays / 7));
@@ -82,7 +87,23 @@ export default function IbuHamilList() {
         hplDate.setDate(hphtDate.getDate() + 280); 
         const hpl = hplDate.toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' });
 
-        return { id: item.id, nama: item.nama, tglLahir: item.tglLahir, hpht: item.hpht, suami: item.suami, alamat: item.alamat, noTelepon: item.noTelepon, usiaKandungan, hpl, tensi, bb, statusRisiko };
+        return { 
+          id: item.id, 
+          nama: item.nama, 
+          tglLahir: item.tglLahir, 
+          hpht: item.hpht, 
+          suami: item.suami, 
+          alamat: item.alamat, 
+          noTelepon: item.noTelepon, 
+          usiaKandungan, 
+          hpl, 
+          tensi, 
+          bb, 
+          tb,
+          tfu,
+          djj,
+          statusRisiko 
+        };
       });
       setData(mapped);
     } catch (err) {
@@ -103,20 +124,57 @@ export default function IbuHamilList() {
   const onAdd = async (values: FormValues) => {
     try {
       setSubmitting(true);
+      
+      // Calculate HPHT if only Usia Kandungan was provided
       let hpht = values.hpht;
+      let initialUk = 0;
+      
+      if (values.usiaKandungan) {
+        initialUk = parseInt(values.usiaKandungan);
+      }
+
       if (!hpht && values.usiaKandungan) {
         const weeks = parseInt(values.usiaKandungan);
         const date = new Date();
         date.setDate(date.getDate() - (weeks * 7));
         hpht = date.toISOString().split('T')[0];
       }
-      await axios.post('/api/v1/ibu-hamil', { 
-        ...values, 
-        tglLahir: new Date(values.tglLahir).toISOString(), 
-        hpht: hpht ? new Date(hpht).toISOString() : new Date().toISOString() 
+      
+      // 1. Register basic profile
+      const regRes = await axios.post('/api/v1/ibu-hamil', { 
+        nama: values.nama,
+        tglLahir: new Date(values.tglLahir).toISOString(),
+        hpht: hpht ? new Date(hpht).toISOString() : new Date().toISOString(),
+        suami: values.suami,
+        alamat: values.alamat,
+        noTelepon: values.noTelepon
       });
-      setIsAddOpen(false); addForm.reset(); fetchIbuHamil();
-    } catch (err) { console.error(err); } finally { setSubmitting(false); }
+
+      const newId = regRes.data.data.id;
+
+      // 2. If measurements are provided, create initial examination
+      const hasMeasurements = values.bb || values.tfu || values.djj;
+      if (newId && hasMeasurements) {
+        const payload: any = {
+          usiaKandungan: initialUk || 0,
+          statusRisiko: "Normal" // Default for initial registration
+        };
+        if (values.bb) payload.bb = parseFloat(values.bb);
+        if (values.tb) payload.tb = parseFloat(values.tb);
+        if (values.tfu) payload.tfu = parseInt(values.tfu);
+        if (values.djj) payload.djj = parseInt(values.djj);
+        
+        await axios.post(`/api/v1/ibu-hamil/${newId}/pemeriksaan`, payload);
+      }
+
+      setIsAddOpen(false); 
+      addForm.reset(); 
+      fetchIbuHamil();
+    } catch (err) { 
+      console.error("Gagal menambahkan ibu hamil:", err); 
+    } finally { 
+      setSubmitting(false); 
+    }
   };
 
   const onEdit = async (values: FormValues) => {
@@ -136,41 +194,66 @@ export default function IbuHamilList() {
 
   const FormFields = ({ control }: { control: any }) => (
     <>
-      <FormField control={control} name="nama" render={({ field }) => (
-        <FormItem><FormLabel>Nama Lengkap</FormLabel><FormControl><Input placeholder="Nama ibu hamil" {...field} /></FormControl><FormMessage /></FormItem>
-      )} />
-      <div className="grid grid-cols-2 gap-4">
-        <FormField control={control} name="tglLahir" render={({ field }) => (
-          <FormItem><FormLabel>Tanggal Lahir</FormLabel><FormControl><Input type="date" {...field} /></FormControl><FormMessage /></FormItem>
+      <div className="space-y-4">
+        <p className="text-xs font-semibold text-primary uppercase tracking-wider">Biodata Dasar</p>
+        <FormField control={control} name="nama" render={({ field }) => (
+          <FormItem><FormLabel>Nama Lengkap</FormLabel><FormControl><Input placeholder="Nama ibu hamil" {...field} /></FormControl><FormMessage /></FormItem>
         )} />
-        <FormField control={control} name="hpht" render={({ field }) => (
+        <div className="grid grid-cols-2 gap-4">
+          <FormField control={control} name="tglLahir" render={({ field }) => (
+            <FormItem><FormLabel>Tanggal Lahir</FormLabel><FormControl><Input type="date" {...field} /></FormControl><FormMessage /></FormItem>
+          )} />
+          <FormField control={control} name="hpht" render={({ field }) => (
+            <FormItem>
+              <FormLabel>HPHT (Opsional)</FormLabel>
+              <FormControl><Input type="date" {...field} /></FormControl>
+              <FormMessage />
+            </FormItem>
+          )} />
+        </div>
+        <FormField control={control} name="usiaKandungan" render={({ field }) => (
           <FormItem>
-            <FormLabel>HPHT (Opsional)</FormLabel>
-            <FormControl><Input type="date" {...field} /></FormControl>
-            <p className="text-[10px] text-muted-foreground mt-1">Isi jika tau tanggal haid terakhir.</p>
+            <FormLabel>Usia Kandungan Saat Ini (Minggu)</FormLabel>
+            <FormControl><Input type="number" placeholder="Contoh: 12" {...field} /></FormControl>
+            <p className="text-[10px] text-muted-foreground mt-1">Digunakan untuk menghitung HPL jika HPHT kosong.</p>
             <FormMessage />
           </FormItem>
         )} />
-      </div>
-      <FormField control={control} name="usiaKandungan" render={({ field }) => (
-        <FormItem>
-          <FormLabel>Atau Usia Kandungan (Minggu)</FormLabel>
-          <FormControl><Input type="number" placeholder="Contoh: 12" {...field} /></FormControl>
-          <p className="text-[10px] text-muted-foreground mt-1">Gunakan ini jika lupa HPHT.</p>
-          <FormMessage />
-        </FormItem>
-      )} />
-      <div className="grid grid-cols-2 gap-4">
-        <FormField control={control} name="suami" render={({ field }) => (
-          <FormItem><FormLabel>Nama Suami</FormLabel><FormControl><Input placeholder="Nama suami" {...field} /></FormControl><FormMessage /></FormItem>
+        <div className="grid grid-cols-2 gap-4">
+          <FormField control={control} name="suami" render={({ field }) => (
+            <FormItem><FormLabel>Nama Suami</FormLabel><FormControl><Input placeholder="Nama suami" {...field} /></FormControl><FormMessage /></FormItem>
+          )} />
+          <FormField control={control} name="noTelepon" render={({ field }) => (
+            <FormItem><FormLabel>No. WhatsApp</FormLabel><FormControl><Input placeholder="08..." {...field} /></FormControl><FormMessage /></FormItem>
+          )} />
+        </div>
+        <FormField control={control} name="alamat" render={({ field }) => (
+          <FormItem><FormLabel>Alamat Lengkap</FormLabel><FormControl><Input placeholder="Alamat rumah..." {...field} /></FormControl><FormMessage /></FormItem>
         )} />
-        <FormField control={control} name="noTelepon" render={({ field }) => (
-          <FormItem><FormLabel>No. WhatsApp</FormLabel><FormControl><Input placeholder="08..." {...field} /></FormControl><FormMessage /></FormItem>
-        )} />
+
+        <div className="pt-2">
+          <div className="bg-muted/30 p-4 rounded-lg border border-border/60">
+            <p className="text-xs font-semibold text-primary uppercase tracking-wider mb-3">Hasil Pemeriksaan Hari Ini (Opsional)</p>
+            <div className="grid grid-cols-2 gap-3">
+              <FormField control={control} name="bb" render={({ field }) => (
+                <FormItem><FormLabel className="text-xs text-muted-foreground">BB (kg)</FormLabel><FormControl><Input type="number" step="0.1" placeholder="60" {...field} /></FormControl><FormMessage /></FormItem>
+              )} />
+              <FormField control={control} name="tb" render={({ field }) => (
+                <FormItem><FormLabel className="text-xs text-muted-foreground">TB (cm)</FormLabel><FormControl><Input type="number" step="0.1" placeholder="155" {...field} /></FormControl><FormMessage /></FormItem>
+              )} />
+            </div>
+            <div className="grid grid-cols-2 gap-3 mt-3">
+              <FormField control={control} name="tfu" render={({ field }) => (
+                <FormItem><FormLabel className="text-xs text-muted-foreground">TFU (cm)</FormLabel><FormControl><Input type="number" placeholder="20" {...field} /></FormControl><FormMessage /></FormItem>
+              )} />
+              <FormField control={control} name="djj" render={({ field }) => (
+                <FormItem><FormLabel className="text-xs text-muted-foreground">DJJ (x/m)</FormLabel><FormControl><Input type="number" placeholder="140" {...field} /></FormControl><FormMessage /></FormItem>
+              )} />
+            </div>
+            <p className="text-[10px] text-muted-foreground mt-2 italic">Isi kolom di atas jika langsung melakukan penimbangan/pemeriksaan.</p>
+          </div>
+        </div>
       </div>
-      <FormField control={control} name="alamat" render={({ field }) => (
-        <FormItem><FormLabel>Alamat Lengkap</FormLabel><FormControl><Input placeholder="Alamat rumah..." {...field} /></FormControl><FormMessage /></FormItem>
-      )} />
     </>
   );
 
@@ -271,8 +354,20 @@ export default function IbuHamilList() {
                     <div className="text-muted-foreground text-xs">HPL: {item.hpl}</div>
                   </TableCell>
                   <TableCell className="text-sm">
-                    <div>Tensi: {item.tensi}</div>
-                    <div className="text-muted-foreground">BB: {item.bb != null ? `${item.bb} kg` : '-'}</div>
+                    <div className="flex flex-col gap-0.5">
+                      <div className="flex items-center gap-2">
+                        <span className="font-medium">Tensi: {item.tensi}</span>
+                        <span className="text-muted-foreground/30">|</span>
+                        <span className="font-medium">BB: {item.bb != null ? Number(item.bb).toFixed(1) : '-'} kg</span>
+                        <span className="text-muted-foreground/30">|</span>
+                        <span className="font-medium">TB: {item.tb != null ? Number(item.tb).toFixed(1) : '-'} cm</span>
+                      </div>
+                      <div className="flex items-center gap-2 text-[11px] text-muted-foreground">
+                        <span>TFU: {item.tfu != null ? `${item.tfu} cm` : '-'}</span>
+                        <span className="text-muted-foreground/30">•</span>
+                        <span>DJJ: {item.djj != null ? `${item.djj}x/m` : '-'}</span>
+                      </div>
+                    </div>
                   </TableCell>
                   <TableCell>
                     <Badge variant="outline" className={`border ${getStatusBadge(item.statusRisiko)}`}>{item.statusRisiko}</Badge>

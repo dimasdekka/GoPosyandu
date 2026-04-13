@@ -257,11 +257,11 @@ export default function LansiaDetail() {
             </div>
             {latestP && (
               <div className="pt-2 border-t border-border/50 space-y-2">
-                <p className="text-xs text-muted-foreground uppercase tracking-wide font-semibold">Hasil Screening Terakhir</p>
-                <div className="flex justify-between"><span className="text-muted-foreground">BB / TB</span><span>{latestP.bb ? `${latestP.bb} kg` : '-'} / {latestP.tb ? `${latestP.tb} cm` : '-'}</span></div>
+                <p className="text-xs text-muted-foreground uppercase tracking-wide font-semibold">Pemeriksaan Terakhir</p>
+                <div className="flex justify-between"><span className="text-muted-foreground">BB / TB</span><span>{latestP.bb != null ? `${Number(latestP.bb).toFixed(1)} kg` : '-'} / {latestP.tb != null ? `${Number(latestP.tb).toFixed(1)} cm` : '-'}</span></div>
                 <div className="flex justify-between"><span className="text-muted-foreground">Tensi</span><span className={latestP.tensiSistolik >= 130 ? "text-destructive font-bold" : ""}>{latestP.tensiSistolik ? `${latestP.tensiSistolik}/${latestP.tensiDiastolik}` : '-'}</span></div>
                 <div className="flex justify-between"><span className="text-muted-foreground">Gula Darah</span><span className={latestP.gulaDarah >= 140 ? "text-destructive font-bold" : ""}>{latestP.gulaDarah ? `${latestP.gulaDarah} mg/dL` : '-'}</span></div>
-                <div className="flex justify-between"><span className="text-muted-foreground">Asam Urat</span><span>{latestP.asamUrat ? `${latestP.asamUrat} mg/dL` : '-'}</span></div>
+                <div className="flex justify-between"><span className="text-muted-foreground">Asam Urat</span><span>{latestP.asamUrat != null ? `${Number(latestP.asamUrat).toFixed(1)} mg/dL` : '-'}</span></div>
                 <div className="flex justify-between"><span className="text-muted-foreground">Kolesterol</span><span className={latestP.kolesterol >= 200 ? "text-destructive font-bold" : ""}>{latestP.kolesterol ? `${latestP.kolesterol} mg/dL` : '-'}</span></div>
               </div>
             )}
@@ -299,22 +299,18 @@ export default function LansiaDetail() {
                         {new Date(r.tglPeriksa || r.createdAt).toLocaleDateString('id-ID')}
                       </TableCell>
                       <TableCell className="text-sm">
-                        <div>{r.bb ? `${r.bb} kg` : '-'}</div>
-                        <div className="text-muted-foreground">{r.tb ? `${r.tb} cm` : ''}</div>
+                        <div>{r.bb != null ? `${Number(r.bb).toFixed(1)} kg` : '-'}</div>
+                        <div className="text-muted-foreground">{r.tb != null ? `${Number(r.tb).toFixed(1)} cm` : ''}</div>
                       </TableCell>
                       <TableCell>
-                        {r.tensiSistolik ? (
-                          <span className={r.tensiSistolik >= 130 ? "text-destructive font-bold" : ""}>
-                            {r.tensiSistolik}/{r.tensiDiastolik}
-                          </span>
-                        ) : '-'}
+                        {r.tensiSistolik ? `${r.tensiSistolik}/${r.tensiDiastolik}` : '-'}
                       </TableCell>
                       <TableCell>
                         {r.gulaDarah ? (
                           <span className={r.gulaDarah >= 140 ? "text-destructive font-bold" : ""}>{r.gulaDarah}</span>
                         ) : '-'}
                       </TableCell>
-                      <TableCell>{r.asamUrat ?? '-'}</TableCell>
+                      <TableCell>{r.asamUrat != null ? Number(r.asamUrat).toFixed(1) : '-'}</TableCell>
                       <TableCell>
                         {r.kolesterol ? (
                           <span className={r.kolesterol >= 200 ? "text-destructive font-bold" : ""}>{r.kolesterol}</span>

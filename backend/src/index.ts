@@ -1,4 +1,4 @@
-import express, { Request, Response, NextFunction } from 'express';
+import express, { Request, Response, NextFunction } from 'express'; // RESTART_TRIGGER_PRISMA_SYNC
 import cors from 'cors';
 import morgan from 'morgan';
 import { connectDB } from './config/db';
@@ -8,6 +8,7 @@ import { remajaRouter } from './modules/remaja/remaja.route';
 import { lansiaRouter } from './modules/lansia/lansia.route';
 import { jadwalRouter } from './modules/jadwal/jadwal.route';
 import { authRouter } from './modules/auth/auth.route';
+import { laporanRouter } from './modules/laporan/laporan.route';
 import { authenticateToken } from './middlewares/auth.middleware';
 
 
@@ -33,6 +34,7 @@ app.use('/api/v1/ibu-hamil', ibuHamilRouter);
 app.use('/api/v1/remaja', remajaRouter);
 app.use('/api/v1/lansia', lansiaRouter);
 app.use('/api/v1/jadwal', jadwalRouter);
+app.use('/api/v1/laporan', laporanRouter);
 
 // Basic Error Handler
 app.use((err: Error, req: Request, res: Response, next: NextFunction) => {

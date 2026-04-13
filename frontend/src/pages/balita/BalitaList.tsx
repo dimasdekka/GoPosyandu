@@ -1,10 +1,11 @@
 import { useEffect, useState } from "react";
-import { Search, Plus, Filter, MoreHorizontal, Edit, Eye } from "lucide-react";
+import { Search, Plus, Filter, MoreHorizontal, Edit, Eye, Baby } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import axios from "axios";
+import { calculateAgePosyandu } from "@/utils";
 
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -266,10 +267,9 @@ export default function BalitaList() {
                   <TableCell className="text-muted-foreground">{idx + 1}</TableCell>
                   <TableCell>
                     <Link to={`/balita/${item.id}`} className="font-semibold hover:text-primary transition-colors">{item.nama}</Link>
-                    <div className="flex gap-2 text-xs text-muted-foreground mt-0.5">
-                      <span>{item.jk === 'L' ? 'Laki-laki' : 'Perempuan'}</span>
-                      <span>•</span>
-                      <span>{item.usiaBulan} bln</span>
+                    <div className="flex items-center gap-1.5 text-xs text-muted-foreground mt-0.5">
+                      <Baby className="w-3.5 h-3.5" />
+                      {item.jk === 'L' ? 'Laki-laki' : 'Perempuan'} • {calculateAgePosyandu(item.tglLahir)}
                     </div>
                   </TableCell>
                   <TableCell className="hidden sm:table-cell text-sm">
@@ -278,7 +278,7 @@ export default function BalitaList() {
                   </TableCell>
                   <TableCell>
                     <Badge variant="outline" className={`border ${getStatusBadge(item.statusGizi)}`}>{item.statusGizi}</Badge>
-                    {item.bb != null && <div className="text-xs text-muted-foreground mt-0.5">{item.bb} kg</div>}
+                    {item.bb != null && <div className="text-xs text-muted-foreground mt-0.5">{Number(item.bb).toFixed(1)} kg</div>}
                   </TableCell>
                   <TableCell className="text-right">
                     <DropdownMenu>
