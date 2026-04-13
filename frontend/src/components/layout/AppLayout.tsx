@@ -31,7 +31,7 @@ export default function AppLayout() {
             <Baby className="w-5 h-5" />
             Data Balita
           </Link>
-          <Link to="#" className="flex items-center gap-3 px-4 py-3 text-muted-foreground hover:bg-muted hover:text-foreground rounded-xl font-medium transition-colors">
+          <Link to="/ibu-hamil" className={`flex items-center gap-3 px-4 py-3 rounded-xl font-medium transition-colors ${isActive('/ibu-hamil') || location.pathname.startsWith('/ibu-hamil/') ? 'bg-primary/10 text-primary' : 'text-muted-foreground hover:bg-muted hover:text-foreground'}`}>
             <Users className="w-5 h-5" />
             Ibu Hamil
           </Link>
@@ -78,6 +78,10 @@ export default function AppLayout() {
         <Link to="/balita" className={`flex flex-col items-center gap-1 ${isActive('/balita') || location.pathname.startsWith('/balita/') ? 'text-primary' : 'text-muted-foreground'}`}>
           <Baby className="w-6 h-6" />
           <span className="text-[10px] font-medium">Balita</span>
+        </Link>
+        <Link to="/ibu-hamil" className={`flex flex-col items-center gap-1 ${isActive('/ibu-hamil') || location.pathname.startsWith('/ibu-hamil/') ? 'text-primary' : 'text-muted-foreground'}`}>
+          <Users className="w-6 h-6" />
+          <span className="text-[10px] font-medium">Ibu Hamil</span>
         </Link>
         <Link to="#" className="flex flex-col items-center gap-1 text-muted-foreground">
           <Calendar className="w-6 h-6" />
